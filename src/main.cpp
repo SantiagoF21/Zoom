@@ -16,7 +16,7 @@ enum class TokenType {
 };
 
 struct Token {
-    TokenType token_type;
+    TokenType type;
     std::optional<std::string> value {};
 };
 
