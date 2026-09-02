@@ -11,20 +11,21 @@
 
 enum class TokenType {
     _return,
-    int_lit,
-    semi
+    _int_lit,
+    _semi
 };
 
 struct Token {
     TokenType token_type;
-    std::optional<std::string> value;
+    std::optional<std::string> value {};
 };
 
 std::vector<Token> tokenize(const std::string& str) {
     for (char c : str) {
         std::cout << c << std::endl;
     }
-
+    std::vector<Token> v;
+    return v;
 }
 
 int main(int argc, char* argv[]) {
