@@ -28,9 +28,6 @@ public:
     explicit Tokenizer(const std::string& src_code);
     
     std::vector<Token> tokenize();
-
-    /* Remove in the future */
-    std::string tokens_to_asm(const std::vector<Token>& tokens);
 private:
     const std::string m_src_code;
     size_t m_index{};

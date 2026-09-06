@@ -48,25 +48,6 @@ std::vector<Token> Tokenizer::tokenize() {
     return tokens;
 }
 
-/* Remove in the future */
-
-std::string Tokenizer::tokens_to_asm(const std::vector<Token>& tokens) {
-    std::stringstream output;
-    output << ".global _main\n.align 2\n\n_main:\n";
-    for (size_t i {}; i < tokens.size(); i++) {
-        const Token& token = tokens.at(i);
-        if (token.id == TokenID::_exit) {
-            if (i + 1 < tokens.size() && tokens.at(i + 1).id == TokenID::_int_literal) {
-                if (i + 2 < tokens.size() && tokens.at(i + 2).id == TokenID::_semi) {
-                    output << "\tmov x0, #" + tokens.at(i + 1).value.value();
-                    output << "\n\tret";
-                }
-            }
-        }
-    }
-    return output.str();
-}
-
 std::optional<char> Tokenizer::peek(size_t index_offset) const {
     if (m_index + index_offset >= m_src_code.length()) {
         return {};
