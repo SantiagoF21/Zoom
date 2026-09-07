@@ -13,7 +13,7 @@ std::vector<Token> Lexer::tokenize() {
         if (CharInfo::is_alpha(*character) || CharInfo::is_underscore(*character)) {
             buffer.push_back(consume());
             auto next_alpha = peek();
-            while (next_alpha && CharInfo::is_alpha(*next_alpha) || CharInfo::is_underscore(*next_alpha) || CharInfo::is_digit(*next_alpha)) {
+            while (next_alpha && (CharInfo::is_alpha(*next_alpha) || CharInfo::is_underscore(*next_alpha) || CharInfo::is_digit(*next_alpha))) {
                 buffer.push_back(consume());
                 next_alpha = peek();
             }
@@ -21,7 +21,7 @@ std::vector<Token> Lexer::tokenize() {
                 tokens.push_back({.id = TokenID::_exit});
                 buffer.clear();
             } else {
-                tokens.push_back({.id = TokenID::_ident});
+                tokens.push_back({.id = TokenID::_ident, .value = buffer});
                 buffer.clear();
             }
         } else if (CharInfo::is_digit(*character)) {
