@@ -10,10 +10,10 @@ std::vector<Token> Lexer::tokenize() {
     std::string buffer;
 
     while(auto character = peek()) {
-        if (CharInfo::is_alpha(*character)) {
+        if (CharInfo::is_alpha(*character) || CharInfo::is_underscore(*character)) {
             buffer.push_back(consume());
             auto next_alpha = peek();
-            while (next_alpha && CharInfo::is_alpha(*next_alpha)) {
+            while (next_alpha && CharInfo::is_alpha(*next_alpha) || CharInfo::is_underscore(*next_alpha) || CharInfo::is_digit(*next_alpha)) {
                 buffer.push_back(consume());
                 next_alpha = peek();
             }
