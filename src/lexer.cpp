@@ -21,8 +21,8 @@ std::vector<Token> Lexer::tokenize() {
                 tokens.push_back({.id = TokenID::_exit});
                 buffer.clear();
             } else {
-                std::cerr << "Lexing Error: The string " + buffer + " could not be formatted into a token.";
-                exit(1);
+                tokens.push_back({.id = TokenID::_ident});
+                buffer.clear();
             }
         } else if (CharInfo::is_digit(*character)) {
             buffer.push_back(consume());
@@ -31,8 +31,11 @@ std::vector<Token> Lexer::tokenize() {
                 buffer.push_back(consume());
                 next_digit = peek();
             }
-            tokens.push_back({.id = TokenID::_int_literal, .value = buffer});
+            tokens.push_back({.id = TokenID::_int, .value = buffer});
             buffer.clear();
+        } else if (CharInfo::is_equal(*character)) {
+            consume();
+            tokens.push_back({ .id = TokenID::_assign});
         } else if (CharInfo::is_semi(*character)) {
             consume();
             tokens.push_back({ .id = TokenID::_semi});
@@ -40,7 +43,7 @@ std::vector<Token> Lexer::tokenize() {
             consume();
             continue;
         } else {
-            std::cerr << "Lexing Error: Unexpected character '" << *character << ".'";
+            std::cerr << "Lexing Error: Unexpected character '" << *character << "'";
             exit(1);
         }
     }
