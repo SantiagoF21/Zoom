@@ -36,6 +36,9 @@ std::vector<Token> Lexer::tokenize() {
         } else if (CharInfo::is_equal(*character)) {
             consume();
             tokens.push_back({ .id = TokenID::_assign});
+        } else if (CharInfo::is_plus(*character)) {
+            consume();
+            tokens.push_back({ .id = TokenID::_plus});
         } else if (CharInfo::is_semi(*character)) {
             consume();
             tokens.push_back({ .id = TokenID::_semi});
