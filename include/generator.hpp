@@ -1,5 +1,5 @@
-#ifndef GENERATION_HPP
-#define GENERATION_HPP
+#ifndef GENERATOR_HPP
+#define GENERATOR_HPP
 
 #include <vector>
 #include <unordered_map>
