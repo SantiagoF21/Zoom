@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <utility>
 #include <string>
 
 #include "node.hpp"
@@ -23,7 +24,7 @@ private:
     std::string generate_expression(const Node::Expression& expr);
     std::string generate_instruction(const Node::Instruction& instr);
 
-    size_t push(const std::string& reg);
+    std::pair<std::string, size_t> push(const std::string& reg);
     size_t reserve_stack_slot();
 };
 #endif
