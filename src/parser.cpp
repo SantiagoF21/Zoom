@@ -1,6 +1,6 @@
 #include "parser.hpp"
-#include "lexer.hpp"
 
+#include <cstdlib>
 #include <iostream>
 
 Parser::Parser(std::vector<Token> tokens) : m_tokens(std::move(tokens)) {}
@@ -89,7 +89,7 @@ Token Parser::consume() {
 
 void Parser::expect(TokenID id, const std::string& err_msg) {
     if (!peek() || peek()->id != id) {
-        std::cerr << "Parse Error: " << err_msg << "\n";
+        std::cerr << "Parse Error: " << err_msg << '\n';
         exit(1);
     }
     consume();
