@@ -1,30 +1,37 @@
 #include "lexer.hpp"
 
+#include <unordered_map>
+#include <string>
 #include <iostream>
 #include <sstream>
 
-Lexer::Lexer(const std::string& src_code) : m_src_code(std::move(src_code)) {}
+namespace {
+    const std::unordered_map<std::string, TokenID> keywords = {
+        {"exit", TokenID::_exit},
+    };
+};
+
+Lexer::Lexer(std::string src_code) : m_src_code(std::move(src_code)) {}
 
 std::vector<Token> Lexer::tokenize() {
     std::vector<Token> tokens;
     std::string buffer;
-
-    while(auto character = peek()) {
-        if (CharInfo::is_alpha(*character) || CharInfo::is_underscore(*character)) {
+    
+    while(auto starting_char = peek()) {
+        if (CharInfo::is_alpha(*starting_char) || CharInfo::is_underscore(*starting_char)) {
             buffer.push_back(consume());
-            auto next_alpha = peek();
-            while (next_alpha && (CharInfo::is_alpha(*next_alpha) || CharInfo::is_underscore(*next_alpha) || CharInfo::is_digit(*next_alpha))) {
+            auto next_char = peek();
+            while (next_char && (CharInfo::is_alpha(*next_char) || CharInfo::is_underscore(*next_char) || CharInfo::is_digit(*next_char))) {
                 buffer.push_back(consume());
-                next_alpha = peek();
+                next_char = peek();
             }
-            if (buffer == "exit") {
-                tokens.push_back({.id = TokenID::_exit});
-                buffer.clear();
+            if (auto iterator = keywords.find(buffer); iterator != keywords.end()) {
+                tokens.push_back({.id = iterator->second});
             } else {
                 tokens.push_back({.id = TokenID::_ident, .value = buffer});
-                buffer.clear();
             }
-        } else if (CharInfo::is_digit(*character)) {
+            buffer.clear();
+        } else if (CharInfo::is_digit(*starting_char)) {
             buffer.push_back(consume());
             auto next_digit = peek();
             while (next_digit && CharInfo::is_digit(*next_digit)) {
@@ -33,21 +40,21 @@ std::vector<Token> Lexer::tokenize() {
             }
             tokens.push_back({.id = TokenID::_int, .value = buffer});
             buffer.clear();
-        } else if (CharInfo::is_equal(*character)) {
-            consume();
-            tokens.push_back({ .id = TokenID::_assign});
-        } else if (CharInfo::is_plus(*character)) {
-            consume();
-            tokens.push_back({ .id = TokenID::_plus});
-        } else if (CharInfo::is_semi(*character)) {
-            consume();
-            tokens.push_back({ .id = TokenID::_semi});
-        } else if (CharInfo::is_white_space(*character))  {
-            consume();
-            continue;
         } else {
-            std::cerr << "Lexing Error: Unexpected character '" << *character << "'";
-            exit(1);
+            if (CharInfo::is_equal(*starting_char)) {
+                tokens.push_back({ .id = TokenID::_assign});
+            } else if (CharInfo::is_plus(*starting_char)) {
+                tokens.push_back({ .id = TokenID::_plus});
+            } else if (CharInfo::is_semi(*starting_char)) {
+                tokens.push_back({ .id = TokenID::_semi});
+            } else if (CharInfo::is_white_space(*starting_char))  {
+                consume();
+                continue;
+            } else {
+                std::cerr << "Lexing Error: Unexpected character '" << *starting_char << "'";
+                exit(1);
+            }
+            consume();
         }
     }
     m_index = 0;
