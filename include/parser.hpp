@@ -14,12 +14,12 @@ public:
 
     std::vector<Node::Instruction> parse_program();
 private:
+    const std::vector<Token> m_tokens;
+    size_t m_index{};
+
     std::optional<Node::Term> parse_term();
     std::optional<Node::Expression> parse_expr();
     std::optional<Node::Instruction> parse_instr();
-
-    const std::vector<Token> m_tokens;
-    size_t m_index{};
 
     std::optional<Token> peek(size_t index_offset = 0) const;
     Token consume();
