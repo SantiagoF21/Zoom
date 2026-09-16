@@ -1,4 +1,4 @@
-#Zoom Language Grammar
+#Zoom Parsing Grammar
 
     term = ident | int
     expr = term | term + expr
