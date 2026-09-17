@@ -49,7 +49,7 @@ std::string Generator::generate_instruction(const Node::Instruction& instr) {
 
         if constexpr (std::is_same_v<T, Node::InstructionExit>) {
             std::string output = generate_expression(i.value);
-            output += "\tadd sp, sp, #EXIT_STACK_SIZE\n";
+            output += "\tadd sp, sp, #__EPILOGUE_SIZE__\n";
             output += "\tret\n";
             return output;
         } else if constexpr (std::is_same_v<T, Node::InstructionAssign>) {
@@ -64,7 +64,7 @@ std::string Generator::generate_instruction(const Node::Instruction& instr) {
 
 std::string Generator::generate_program() {
     std::string output = ".global _main\n.align 2\n\n_main:\n";
-    output += "\tsub sp, sp, #STACK_SIZE\n";
+    output += "\tsub sp, sp, #__PROLOGUE_SIZE__\n";
 
     for (const auto& instr : m_program) {
         output += generate_instruction(instr);
@@ -72,7 +72,7 @@ std::string Generator::generate_program() {
 
     std::string final_size = std::to_string(m_stack_size);
 
-    for (const std::string& placeholder : { std::string("STACK_SIZE"), std::string("EXIT_STACK_SIZE") }) {
+    for (const std::string& placeholder : { std::string("__PROLOGUE_SIZE__"), std::string("__EPILOGUE_SIZE__") }) {
         size_t pos = 0;
         while ((pos = output.find(placeholder, pos)) != std::string::npos) {
             output.replace(pos, placeholder.length(), final_size);
