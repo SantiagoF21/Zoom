@@ -64,11 +64,18 @@ std::optional<Node::Instruction> Parser::parse_instr() {
 
 std::vector<Node::Instruction> Parser::parse_program() {
     std::vector<Node::Instruction> instructions;
+    bool seen_exit = false;
     while (peek()) {
+        if (seen_exit) {
+            std::cerr << "Warning: Unreachable code after 'exit' statement\n";
+        }
         auto instr = parse_instr();
         if (!instr) {
             std::cerr << "Parse Error: Expected instruction\n";
             exit(1);
+        }
+        if (std::holds_alternative<Node::InstructionExit>(instr->value)) {
+            seen_exit = true;
         }
         instructions.push_back(std::move(*instr));
     }
