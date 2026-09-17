@@ -7,3 +7,5 @@ add_executable(zoom
 )
 
 target_include_directories(zoom PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+target_compile_options(zoom PRIVATE -Wall -Wextra -Wpedantic)
