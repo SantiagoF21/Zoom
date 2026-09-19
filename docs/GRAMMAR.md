@@ -1,5 +1,8 @@
-#Zoom Parsing Grammar
+# Zoom Parsing Grammar
 
-    term = ident | int
-    expr = term | term + expr
-    instr = <exit> expr; | ident = expr;
+```
+factor = ident | int
+term   = factor | factor * term | factor / term | factor % term
+expr   = term | term + expr | term - expr
+instr  = <exit> expr ; | ident = expr ;
+```

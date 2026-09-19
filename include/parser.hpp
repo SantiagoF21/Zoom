@@ -17,6 +17,7 @@ private:
     const std::vector<Token> m_tokens;
     size_t m_index{};
 
+    std::optional<Node::Factor> parse_factor();
     std::optional<Node::Term> parse_term();
     std::optional<Node::Expression> parse_expr();
     std::optional<Node::Instruction> parse_instr();

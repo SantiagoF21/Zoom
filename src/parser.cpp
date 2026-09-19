@@ -5,14 +5,32 @@
 
 Parser::Parser(std::vector<Token> tokens) : m_tokens(std::move(tokens)) {}
 
-std::optional<Node::Term> Parser::parse_term() {
+std::optional<Node::Factor> Parser::parse_factor() {
     if (peek() && peek()->id == TokenID::_ident) {
-        return Node::Term{consume()};
+        return Node::Factor{consume()};
     }
     if (peek() && peek()->id == TokenID::_int) {
-        return Node::Term{consume()};
+        return Node::Factor{consume()};
     }
     return {};
+}
+
+std::optional<Node::Term> Parser::parse_term() {
+    auto factor = parse_factor();
+    if (!factor) {
+        return {};
+    }
+    if (peek() && (peek()->id == TokenID::_mul || peek()->id == TokenID::_div || peek()->id == TokenID::_mod)) {
+        Token math_operator = consume();
+        std::optional<Node::Term> right_hand_side = parse_term();
+        if (!right_hand_side) {
+            std::cerr << "Parse Error: Expected term after operator\n";
+            exit(1);
+        }
+        Node::RecursiveTerm recursive_term{std::move(*factor), math_operator, std::make_unique<Node::Term>(std::move(*right_hand_side))};
+        return Node::Term{std::move(recursive_term)};
+    }
+    return Node::Term{std::move(*factor)};
 }
 
 std::optional<Node::Expression> Parser::parse_expr() {
@@ -20,15 +38,14 @@ std::optional<Node::Expression> Parser::parse_expr() {
     if (!term) {
         return {};
     }
-
-    if (peek() && peek()->id == TokenID::_plus) {
-        consume();
-        auto right_hand_side = parse_expr();
+    if (peek() && (peek()->id == TokenID::_plus || peek()->id == TokenID::_minus)) {
+        Token math_operator = consume();
+        std::optional<Node::Expression> right_hand_side = parse_expr();
         if (!right_hand_side) {
-            std::cerr << "Parse Error: Expected expression after '+'\n";
+            std::cerr << "Parse Error: Expected expression after operator\n";
             exit(1);
         }
-        Node::RecursiveExpression recursive_expression{std::move(*term), std::make_unique<Node::Expression>(std::move(*right_hand_side))};
+        Node::RecursiveExpression recursive_expression{std::move(*term), math_operator, std::make_unique<Node::Expression>(std::move(*right_hand_side))};
         return Node::Expression{std::move(recursive_expression)};
     }
 
