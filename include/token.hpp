@@ -10,6 +10,10 @@ enum class TokenID {
     _assign,
     _int,
     _plus,
+    _minus,
+    _mul,
+    _div,
+    _mod,
     _semi,
     _exit
 };
@@ -27,6 +31,10 @@ namespace CharInfo {
     constexpr bool is_equal(char character) {return character == '=';}
     constexpr bool is_underscore(char character) {return character == '_';}
     constexpr bool is_plus(char character) {return character == '+';}
+    constexpr bool is_minus(char character) {return character == '-';}
+    constexpr bool is_mul(char character) {return character == '*';}
+    constexpr bool is_div(char character) {return character == '/';}
+    constexpr bool is_mod(char character) {return character == '%';}
 }
 
 #endif

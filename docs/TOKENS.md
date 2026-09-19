@@ -6,6 +6,10 @@
 | `_int`    | digit (`0`–`9`)                   | digit                     | yes — text |
 | `_assign` | `=`                               | n/a — single character    | no         |
 | `_plus`   | `+`                               | n/a — single character    | no         |
+| `_minus`  | `-`                               | n/a — single character    | no         |
+| `_mul`    | `*`                               | n/a — single character    | no         |
+| `_div`    | `/`                               | n/a — single character    | no         |
+| `_mod`    | `%`                               | n/a — single character    | no         |
 | `_semi`   | `;`                               | n/a — single character    | no         |
 
 ## Keywords
@@ -39,3 +43,4 @@ an ordinary identifier if it doesn't match a table entry exactly.
 
 - Any character not covered by the rules above is a lexing error;
   the lexer reports it and exits immediately (no error recovery).
+  
