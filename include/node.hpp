@@ -7,16 +7,16 @@
 #include "token.hpp"
 
 namespace Node {
-    struct Factor{
+    struct Factor {
         Token value;
     };
 
     struct Term;
 
     struct RecursiveTerm {
-        Factor left_hand_side;
+        std::unique_ptr<Term> left_hand_side;
         Token math_operator;
-        std::unique_ptr<Term> right_hand_side;
+        Factor right_hand_side;
     };
 
     struct Term {
@@ -26,9 +26,9 @@ namespace Node {
     struct Expression;
 
     struct RecursiveExpression {
-        Term left_hand_side;
+        std::unique_ptr<Expression> left_hand_side;
         Token math_operator;
-        std::unique_ptr<Expression> right_hand_side;
+        Term right_hand_side;
     };
 
     struct Expression {
