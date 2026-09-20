@@ -20,6 +20,7 @@ private:
 
     size_t m_stack_size = 0;
 
+    std::string generate_factor(const Node::Factor& factor);
     std::string generate_term(const Node::Term& term);
     std::string generate_expression(const Node::Expression& expr);
     std::string generate_instruction(const Node::Instruction& instr);

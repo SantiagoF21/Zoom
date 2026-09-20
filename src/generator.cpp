@@ -5,19 +5,61 @@
 
 Generator::Generator(std::vector<Node::Instruction> program) : m_program(std::move(program)) {}
 
-std::string Generator::generate_term(const Node::Term& term) {
-    if (term.value.id == TokenID::_int) {
-        return "\tmov x0, #" + term.value.value.value_or("") + '\n';
-    } else if (term.value.id == TokenID::_ident) {
-        const std::string& name = term.value.value.value();
-        if (!m_vars.contains(name)) {
-            std::cerr << "Generator Error: Undeclared variable '" << name << "'\n";
+std::string Generator::generate_factor(const Node::Factor& factor) {
+    if (factor.value.id == TokenID::_int) {
+        return "\tmov x0, #" + factor.value.value.value_or("") + '\n';
+    } else if (factor.value.id == TokenID::_ident) {
+        const std::string& var_name = factor.value.value.value();
+        if (!m_vars.contains(var_name)) {
+            std::cerr << "Generator Error: Undeclared variable '" << var_name << "'\n";
             exit(1);
         }
-        size_t offset = m_vars.at(name);
+        size_t offset = m_vars.at(var_name);
         return "\tldr x0, [sp, #" + std::to_string(offset) + "]\n";
     }
     return "";
+}
+
+std::string Generator::generate_term(const Node::Term& term) {
+    return std::visit([&](const auto& t) -> std::string {
+        using T = std::decay_t<decltype(t)>;
+
+        if constexpr (std::is_same_v<T, Node::Factor>) {
+            return generate_factor(t);
+        } else if constexpr (std::is_same_v<T, Node::RecursiveTerm>) {
+            std::string output = generate_term(*t.left_hand_side);
+            output += "\tmov x9, x0\n";
+
+            auto [push_text, left_hand_side_offset] = push("x9");
+            output += push_text;
+
+            output += generate_factor(t.right_hand_side);
+
+            output += "\tldr x9, [sp, #" + std::to_string(left_hand_side_offset) + "]\n";
+
+            switch (t.math_operator.id) {
+                case TokenID::_mul:
+                    output += "\tmul x0, x9, x0\n";
+                    break;
+                case TokenID::_div:
+                    output += "\tsdiv x0, x9, x0\n";
+                    break;
+                case TokenID::_mod: {
+                    output += "\tmov x10, x9\n";     // x10 = a
+                    output += "\tmov x11, x0\n";     // x11 = b
+                    output += "\tsdiv x0, x9, x0\n"; // x0 = a / b
+                    output += "\tmul x0, x0, x11\n"; // x0 = (a / b) * b
+                    output += "\tsub x0, x10, x0\n"; // x0 = a - ((a / b) * b)
+                    break;
+                }
+                default:
+                    std::cerr << "Generator Error: Unhandled Term operator\n";
+                    exit(1);
+            }
+            return output;
+        }
+        return "";
+    }, term.value);
 }
 
 std::string Generator::generate_expression(const Node::Expression& expr) {
@@ -27,16 +69,43 @@ std::string Generator::generate_expression(const Node::Expression& expr) {
         if constexpr (std::is_same_v<T, Node::Term>) {
             return generate_term(e);
         } else if constexpr (std::is_same_v<T, Node::RecursiveExpression>) {
-            std::string output = generate_term(e.left_hand_side);
+            std::string output = generate_expression(*e.left_hand_side);
             output += "\tmov x9, x0\n";
 
             auto [push_text, left_hand_side_offset] = push("x9");
             output += push_text;
 
-            output += generate_expression(*e.right_hand_side);
+            output += generate_term(e.right_hand_side);
 
             output += "\tldr x9, [sp, #" + std::to_string(left_hand_side_offset) + "]\n";
-            output += "\tadd x0, x9, x0\n";
+
+            switch (e.math_operator.id) {
+                case TokenID::_plus:
+                    output += "\tadd x0, x9, x0\n";
+                    break;
+                case TokenID::_minus:
+                    output += "\tsub x0, x9, x0\n";
+                    break;
+                case TokenID::_mul:
+                    output += "\tmul x0, x9, x0\n";
+                    break;
+                case TokenID::_div:
+                    output += "\tsdiv x0, x9, x0\n";
+                    break;
+                case TokenID::_mod: {
+                    // a mod b = a - (b * (a / b))
+                    // x0 currently has 'b' (right side), x9 has 'a' (left side)
+                    output += "\tmov x10, x9\n";     // x10 = a
+                    output += "\tmov x11, x0\n";     // x11 = b
+                    output += "\tsdiv x0, x9, x0\n"; // x0 = a / b
+                    output += "\tmul x0, x0, x11\n"; // x0 = (a / b) * b
+                    output += "\tsub x0, x10, x0\n"; // x0 = a - ((a / b) * b)
+                    break;
+                }
+                default:
+                    std::cerr << "Generator Error: Unhandled operator\n";
+                    exit(1);
+            }
             return output;
         }
 
