@@ -10,7 +10,7 @@ inline constexpr std::string_view HELP_MESSAGE =
     "Options:\n"
     "\t-h, --help\t\tShow this help message\n"
     "\t-d, --debug\t\tPrint token stream and AST\n"
-    "\t-S, --assembly\tStop after generating assembly\n"
+    "\t-S, --assembly\t\tStop after generating assembly\n"
     "\t-c, --object-file\tStop after generating object file\n"
     "\t-o, --output <file>\tSpecify output name (default: program)\n";
 
