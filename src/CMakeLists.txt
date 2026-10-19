@@ -1,5 +1,6 @@
 add_executable(zoom 
     main.cpp 
+    cli_parser.hpp
     lexer.cpp 
     parser.cpp 
     generator.cpp
