@@ -1,0 +1,6 @@
+num_1 = 81 + 43;
+num_2 = num_1;
+num_3 = num_2 + 43;
+num_4 = num_1 + num_3;
+num_5 = 8;
+exit 0;
