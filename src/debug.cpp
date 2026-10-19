@@ -7,9 +7,9 @@ namespace Debug {
 std::string token_to_string(const Token& token) {
     switch (token.id) {
         case (TokenID::_exit): return "_exit";
-        case (TokenID::_int): return "_int(" + token.value.value_or("") + ")";
+        case (TokenID::_int): return "_int(" + std::string(token.value.value_or("")) + ")";
         case (TokenID::_semi): return "_semi";
-        case (TokenID::_ident): return "_ident(" + token.value.value_or("") + ")";
+        case (TokenID::_ident): return "_ident(" + std::string(token.value.value_or("")) + ")";
         case (TokenID::_assign): return "_assign";
         case (TokenID::_plus): return "_plus";
         case (TokenID::_minus): return "_minus";
@@ -72,7 +72,7 @@ std::string instr_to_string(const Node::Instruction& instr) {
         if constexpr (std::is_same_v<T, Node::InstructionExit>) {
             return "Exit(" + expr_to_string(i.value) + ")";
         } else if constexpr (std::is_same_v<T, Node::InstructionAssign>) {
-            return "Assign(" + i.target.value.value_or("") + " = " + expr_to_string(i.value) + ")";
+            return "Assign(" + std::string(i.target.value.value_or("")) + " = " + expr_to_string(i.value) + ")";
         } else {
             static_assert(!sizeof(T), "instr_to_string: unhandled Instruction alternative");
         }

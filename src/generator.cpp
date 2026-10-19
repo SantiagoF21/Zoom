@@ -7,9 +7,9 @@ Generator::Generator(std::vector<Node::Instruction> program) : m_program(std::mo
 
 std::string Generator::generate_factor(const Node::Factor& factor) {
     if (factor.value.id == TokenID::_int) {
-        return "\tmov x0, #" + factor.value.value.value_or("") + '\n';
+        return "\tmov x0, #" + std::string(factor.value.value.value_or("")) + '\n';
     } else if (factor.value.id == TokenID::_ident) {
-        const std::string& var_name = factor.value.value.value();
+        const std::string& var_name = std::string(factor.value.value.value());
         if (!m_vars.contains(var_name)) {
             std::cerr << "Generator Error: Undeclared variable '" << var_name << "'\n";
             exit(1);
@@ -125,7 +125,7 @@ std::string Generator::generate_instruction(const Node::Instruction& instr) {
             std::string output = generate_expression(i.value);
             auto [push_text, offset] = push("x0");
             output += push_text;
-            m_vars[i.target.value.value()] = offset;
+            m_vars[std::string(i.target.value.value())] = offset;
             return output; 
         }
     }, instr.value);
