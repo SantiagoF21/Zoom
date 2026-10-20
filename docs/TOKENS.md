@@ -1,4 +1,4 @@
-#Zoom Lexical Rules
+# Zoom Lexical Rules
 
 | Token     | Can start with                    | Can continue with         | Has value? |
 |-----------|-----------------------------------|---------------------------|------------|
@@ -39,8 +39,16 @@ an ordinary identifier if it doesn't match a table entry exactly.
 
 - Spaces, tabs, and newlines are skipped and never produce a token.
 
+## Memory Representation
+
+The lexer uses a **zero-copy** approach. Instead of allocating new strings for every identifier or integer, it uses `std::string_view`. 
+
+- **Lexeme**: The raw sequence of characters in the source code.
+- **Token Value**: A `string_view` that points directly into the original source code buffer.
+
+This ensures that lexing is extremely fast and avoids unnecessary heap allocations.
+
 ## Errors
 
 - Any character not covered by the rules above is a lexing error;
   the lexer reports it and exits immediately (no error recovery).
-  
